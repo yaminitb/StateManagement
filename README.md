@@ -1,4 +1,4 @@
-4.1 `@Published` + `ObservableObject` as the single source of truth
+1.1 `@Published` + `ObservableObject` as the single source of truth
 
 @MainActor
 final class SessionManager: ObservableObject {
@@ -12,7 +12,7 @@ final class SessionManager: ObservableObject {
     // whenever any of the above changes — no manual notification needed.
 }
 
-4.2 Persisted state via a computed property (survives app restarts)
+1.2 Persisted state via a computed property (survives app restarts)
 
 private var lastActivityDate: Date {
     get { UserDefaults.standard.object(forKey: lastActivityKey) as? Date ?? Date() }
@@ -21,7 +21,7 @@ private var lastActivityDate: Date {
 
 Why it's a good pattern: reads/writes look like plain property access everywhere else in the class, but are transparently backed by UserDefaults — state survives a cold launch without any extra plumbing at call sites.
 
-4.3 Cross-feature events via `NotificationCenter`, consumed as app-wide state resets
+1.3 Cross-feature events via `NotificationCenter`, consumed as app-wide state resets
 extension NSNotification.Name {
     static let sessionExpired = NSNotification.Name("sessionExpired")
 }
@@ -35,7 +35,9 @@ NotificationCenter.default.addObserver(forName: .sessionExpired, object: nil, qu
 }
 
 Why it's a good pattern: SessionManager (auth state) and Router (navigation state) don't need direct references to each other — a broadcast event keeps two independent pieces of app state in sync.
-4.4 Scoped, per-screen state vs. app-wide state
+
+1.4 Scoped, per-screen state vs. app-wide state
+
 Contrast the app-wide singletons above with OTPVerificationViewModel, whose @Published properties (otpCode, timerString, viewState) are scoped to a single bottom sheet and destroyed with it:
 @MainActor
 final class OTPVerificationViewModel: ObservableObject {
